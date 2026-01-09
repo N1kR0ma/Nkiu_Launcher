@@ -2,8 +2,6 @@ clear all
 close all
 format long
 
-global sigma tau rho_crankshaft rho_prot 
-
 %% Initial data
 
 %%%%%%% Суффикс для обозначения нового расчёта 
@@ -11,14 +9,14 @@ global sigma tau rho_crankshaft rho_prot
 %%%%%%% MM --- для режима максимального момента
 %%%%%%% MP --- для режима максимальной мощности
 %%%%%%% (Если его не изменить предыдущие файлы перепишутся)
-Skuffix = 'MM';
+Skuffix = 'MP';
 
 %%%%%%% Расчёт рабочего процесса оригинального двигателя (файл типа Dat)
-file_ish = 'R4_P_MM_.DAT';
+file_ish = 'V8_MP_.DAT';
 
 %%%% Частота вращения на дпнном режиме 
 %%%% (не забывайте менять при смене режима) .П
-w = 1000;
+w = 4000;
 
 %%%%%%% Степень в которую возводится отношение числа циллиндров для сечений
 %%%%%%% клапанов (При этом параметре мощности сходятся довольно точно)
@@ -29,44 +27,39 @@ stepen_2 =  1;
 Dos_box_dir = 'C:\Program^ Files^ ^(x86^)\DOSBox-0.74-3\DOSBOX.EXE';
 
 %%%%%%% Cylinder diametr
-D_first = 0.092;
+D_first = 0.088;
 
 %%%%%% Piston stroke
-S_first = 0.092;
+S_first = 0.090;
 
 %%%%%% Conncting rod length
-L_first = 0.159;
+L_first = 0.155;
 
 %%%% Effective cross-sectional area of ​​the intake valves
-S_in_first = 0.00077;
+S_in_first = 0.0016;
 
 %%%%% Effective cross-sectional area of ​​the exhaust valves
-S_ex_first = 0.00070;
+S_ex_first = 0.0019;
 
 
 %%%%% Number of cylinders first
-n_first = 4
+n_first = 8
 %%%%% Number of cylinders second
 n_second = 6;
 
 %%%%% Number of cylinders third
-n_third = 8;
+n_third = 12;
 
-%%%%%%% Материал коленчатого вала
-%%%%%%% 1 ---
-%%%%%%% 18 --- Сталь 40Х2Н2МА (308 1008 7800)
-%%%%%%% 22 --- Чугун СЧ 35 
-material_type = 22;
 
 %%%%%%% Выбор типов двигателей (рядом сидящие вам kval не посчитает так что
 %%%%%%% если у вас исходник такой то его нужно проводить как ещё
 %%%%%%% 1 двигатель (да я знаю это гениально но не я автор))
 %%%%%%% 0 - Рядный
 %%%%%%% 1 - V-образный с рядом сидящими
-%%%%%%% 2 - V-образный c прицепными
-type_komp_first = 0;
+%%%%%%% 2 - V-образный с рядом прицепными
+type_komp_first = 1;
 
-type_komp_second = 2;
+type_komp_second = 0;
 
 type_komp_third = 2;
 
@@ -83,54 +76,50 @@ type_dvs_first = 7;
 
 %%%%%% Массы которые никто не знает как считать (лучше бериете 
 %%%%%% в рамках диапазона для вашего движка не сильно большие)
-mass_postup_first = 120;
-mass_post_zil_first = 68;
-massa_shatun_first = 120;
+mass_postup_first = 88;
+mass_post_zil_first = 88;
+massa_shatun_first = 80;
 %%%%%% Параметр для V образных двигателей
 massa_postup_boc_zil = 88;
 
 %%%%%% Knee length
-L_0_first = 0.120;
+L_0_first = 0.103;
 
 %%%%% Crankpin diametr (DK_naruzh)
-Dk_sh_first = 0.064;
+Dk_sh_first = 0.070;
 
 %%%%% Crankpin bore diametr (DK_vnutr)
-Dk_sb_first = 0.03;
+Dk_sb_first = 0.00;
 
 %%%%%% Main jornal diametr (Dsh_naruzh)
-Ds_sh_first = 0.058;
+Ds_sh_first = 0.053;
 
 %%%%%% Main jornal bore diametr (Dsh_vnutr)
-Ds_sb_first = 0.033;
+Ds_sb_first = 0.02;
 
 %%%%%% Cheek width
-H_first = 0.09;
+H_first = 0.093;
 
 %%%%%%% Cheek thickness
 B_first = 0.022;
 
 %%%%%%% gltel
-L_5_first = 0.02; 
+L_5_first = 0.011; 
 
 %%%%%%% Радиус скругляения с щекой
-R_galt_first = 2;
+R_galt_first = 3;
 
 %%%%%%% Смещение оси противовеса 
-L_6_first = 0.002;
+L_6_first = 0.0015;
 
-%%%%%%%% ЕСЛИ ХОТИТЕ ЧТОБЫ ПАРАМЕТР СТАВИЛСЯ ПО УМОЛЧАНИЮ КАК В ПРОГЕ
-%%%%%%%% СТАВЬТЕ 0 ИНАЧЕ БУДЕТ ВВЕДЕНО ТО ЧТО НАПИСАНО (ТОЛЬКО ДЛЯ ТОГО ЧТО
-%%%%%%%% НИЖЕ  Не забывайте что чугун не сталь
+%%%%%%% Коэффициент линейного изменения масс
+koef_m = 12;
 
-%%%%%%% Предел выносливости по расчяжению
-sigma = 480;
-%%%%%%% Предел выносливости по кручению
-tau = 290;
-%%%%%%% Плотность коленчатого вала
-rho_crankshaft = 7200;
-%%%%%%% Плотность противовесов
-rho_prot =  7200;
+%%%%%%% Коэффициент изменения толщины щёк
+koef_B = 1.2;
+
+%%%%%%% Коэффициент изменения длины коренной шейки
+koef_L_5 = 1.5;
 
 %% Nev DVS_parametr
 %%%%%%% Constant of the mechanism
@@ -162,23 +151,23 @@ R_first  = S_first/2;
 
 %%%%%% Чтобы массы отличаличались (возможно это надо как-то переписать)
 if n_first>n_second
-    mass_postup_second = mass_postup_first+2;
-    mass_post_zil_second = mass_post_zil_first+2;
-    massa_shatun_second = mass_post_zil_first+2;
+    mass_postup_second = mass_postup_first+koef_m;
+    mass_post_zil_second = mass_post_zil_first+koef_m;
+    massa_shatun_second = mass_post_zil_first+koef_m;
 else
-    mass_postup_second = mass_postup_first-2;
-    mass_post_zil_second = mass_post_zil_first-2;
-    massa_shatun_second = mass_post_zil_first-2;
+    mass_postup_second = mass_postup_first-koef_m;
+    mass_post_zil_second = mass_post_zil_first-koef_m;
+    massa_shatun_second = mass_post_zil_first-koef_m;
 end
 
 if n_first>n_third
-    mass_postup_third = mass_postup_first+2;
-    mass_post_zil_third = mass_post_zil_first+2;
-    massa_shatun_third = mass_post_zil_first+2;
+    mass_postup_third = mass_postup_first+koef_m;
+    mass_post_zil_third = mass_post_zil_first+koef_m;
+    massa_shatun_third = mass_post_zil_first+koef_m;
 else
-    mass_postup_third = mass_postup_first-2;
-    mass_post_zil_third = mass_post_zil_first-2;
-    massa_shatun_third = mass_post_zil_first-2;
+    mass_postup_third = mass_postup_first-koef_m;
+    mass_post_zil_third = mass_post_zil_first-koef_m;
+    massa_shatun_third = mass_post_zil_first-koef_m;
 end
 
 %% New crankshaft 2
@@ -213,8 +202,8 @@ L_5_second = L_5_first * (n_first / n_second)^stepen_2;
 if type_komp_first==1
     L_4 = (L_0_second - 2*L_5_second - ...
         2*B_second - 4 * R_galt_first/1000)/2;
-    B_second = B_second/1.25;
-    L_5_second = L_5_second/1.5;
+    B_second = B_second/koef_B^abs((n_first - n_second)/n_first);
+    L_5_second = L_5_second/koef_L_5;
     L_0_second = L_5_second*2 + B_second*2 + L_4 + 4 * R_galt_first/1000;
 end
 
@@ -250,8 +239,8 @@ L_5_third = L_5_first * (n_first / n_third)^stepen_2;
 if type_komp_first==1
     L_4 = (L_0_third - 2*L_5_third - ...
         2*B_third - 4 * R_galt_first/1000)/2;
-    B_third = B_third/1.25;
-    L_5_third = L_5_third/1.5;
+    B_third = B_third/koef_B^abs((n_first - n_third)/n_first);
+    L_5_third = L_5_third/koef_L_5;
     L_0_third = L_5_third*2 + B_third*2 + L_4 + 4 * R_galt_first/1000;
 end
 
@@ -286,8 +275,7 @@ Name_first = kval_function(type_dvs_first,...
     L_6_first,...
     R_galt_first,...
     way,...
-    Skuffix,...
-    material_type);
+    Skuffix);
 
 copyfile(Name_first, way);
 
@@ -337,8 +325,7 @@ Name_second = kval_function(type_dvs_first,...
     L_6_first,...
     R_galt_first,...
     way,...
-    Skuffix, ...
-    material_type);
+    Skuffix);
 
 copyfile(Name_second, way);
 
@@ -387,8 +374,7 @@ Name_third = kval_function(type_dvs_first,...
     L_6_first,...
     R_galt_first,...
     way,...
-    Skuffix, ...
-    material_type);
+    Skuffix);
 
 copyfile(Name_third, way);
 
@@ -425,8 +411,8 @@ Skuffix = Skuffix + "p";
 %%%% правду
     L_4 = (L_0_first - 2*L_5_first - ...
         2*B_first - 4 * R_galt_first/1000)/2;
-    B_first = B_first/1.25;
-    L_5_first = L_5_first/1.5;
+    B_first = B_first/koef_B;   % Здесь нет кэфа тк число цилинров ну 1=1
+    L_5_first = L_5_first/koef_L_5;
     L_0_first = L_5_first*2 + B_first*2 + L_4 + 4 * R_galt_first/1000;
 
 
@@ -452,8 +438,7 @@ Name_first = kval_function(type_dvs_first,...
     L_6_first,...
     R_galt_first,...
     way,...
-    Skuffix, ...
-    material_type);
+    Skuffix);
 
 copyfile(Name_first, way);
 
@@ -671,10 +656,8 @@ function [Name] = kval_function(type_dvs,...
     L_6,...
     R_galt,...
     way2DIA,...
-    Skuffix, ...
-    material_type);
+    Skuffix)
 
-global sigma tau rho_crankshaft rho_prot 
 
 %%%% Поряк раюоты циллиндров в зависимости от их числа и типа двигателя
 
@@ -741,72 +724,12 @@ else
         end
 end
 
-%%% Выбор стали и её параметров
-
-switch material_type
-    case 18
-        sigma_1 = 1008;
-        tau_1 = 308;
-        rho_crankshaft_1 = 7800;
-        Name_material = 'Сталь 40Х2Н2МА';
-        Name_type_material = 'Легированная'
-    case 22
-        sigma_1 = 480;
-        tau_1 = 290;
-        rho_crankshaft_1 = 7200;
-        Name_material = 'Чугун СЧ 35'; 
-        Name_type_material = 'Углеродистая'
-end
-
-chuguni = [22, 23];
-%%%%% Если пользователь что-то ввёл то то надо ли что-то записвать
-if sigma ~= 0
-    sigma_1 = sigma;
-end
-
-if tau ~= 0
-    tau_1 = tau;
-end
-
-if ~any(material_type == chuguni) && rho_crankshaft_1 ~=7800
-    fprintf(['Вы уверены в плотности которую назначили \n вы выбрали сталь' ...
-        ' а  плотность не та'])
-end
-
-if any(material_type == chuguni) && rho_crankshaft_1 ~=7200
-    fprintf(['Вы уверены в плотности которую назначили \n вы выбрали чугун' ...
-        ' а  плотность не та'])
-end
-
-if rho_crankshaft ~= 0
-    rho_crankshaft_1 = rho_crankshaft;
-end
-
-
-
 %%%% Имена файлов коленчатых валов
 Name_1 = Name_0 + string(number_zil_sec)+ "_" + Skuffix +'.KVL'
 
 %%% Определение пути до файла с расчётами ДВС
 way2DIA =way2DIA + '\'+ Name_0 + string(number_zil_sec)+...
     '_' + Skuffix + '.DIA';
-
-switch type_dvs
-        case 1
-    Name_type_DVS = 'Среднеоборотистый дизель';
-        case 2
-    Name_type_DVS = 'Среднеоборотный форсированный дизель';
-        case 3
-    Name_type_DVS = 'Высокооборотный дизель';
-        case 4
-    Name_type_DVS = 'Авто. дизель с чугунными поршнями';
-        case 5
-    Name_type_DVS = 'Авто. дизель с алюмин. поршнями';
-        case 6
-    Name_type_DVS = 'вто. двигатель с ВЭИ с чугунными поршнями';
-        case 7
-    Name_type_DVS = 'Авто. двигатель с ВЭИ с алюмин. поршнями';
-end
 
 %%%%%%%%%% Здесь и далее если что-то меняете то учитывайте что:
 %%%%%%%%%% 1) \n в конце каждой строки для переноса строки если его убрать
@@ -825,24 +748,25 @@ fprintf(fileID,'%s\n' ,way2DIA);
 ...%%%%%%% 6 - Авто. двигатель с ВЭИ с чугунными поршнями
 ...%%%%%%% 7 - Авто. двигатель с ВЭИ с алюмин. поршнями
 fprintf(fileID,'%d\n', type_dvs);
-%%%%% Название типа двигателя
- fprintf(fileID,'%s\n', Name_type_DVS);
-%%%%% Номер материала
- fprintf(fileID,'%d\n', material_type);
-%%%%% Название Стали
- fprintf(fileID,'%s\n', Name_material);
-%%%%% Тип материала стали
- fprintf(fileID,'%s\n', Name_type_material);
+...%%%%%%% Просто фраза которая здесь зачем-то но без неё не работает
+...%%%%%%%(не волнуйтесь если не совпадает с вашей это влияет примерно
+...%%%%%%% ни на что)
+fprintf(fileID,['Авто. двигатель с ВЭИ с алюмин. поршнями\n'...
+... %%%%%%%% Сами вбивайте мне лень разбираться по умалчанию читать
+...%%%%%%% Через строчку
+'18\n'...
+'Сталь 40Х2Н2МА\n'...
+'Легированная\n'...
 ... %%%%%%% Предел выносливости касательные
 ...%%%%%%% но я не уверен значения странные
- fprintf(fileID,'%f\n', tau_1);
+'308\n'...
 ... %%%%%%% Предел выносливости нормлаьные
 ...%%%%%%% но я не уверен значения странные
- fprintf(fileID,'%f\n', sigma_1);
+'1008\n'...
 ... %%%%%%% Плотность стали
- fprintf(fileID,'%f\n', rho_crankshaft_1);
+'7800\n'...
 ... %%%%%%% Плотность противовесов
- fprintf(fileID,'%f\n', rho_prot);
+'7800\n']);
 ... %%%%%%% Частота вращения вала в данном режиме
  fprintf(fileID,'%f\n', w);
  ... %%%%%%% Масса поступательно движущихся частей
